@@ -1,0 +1,12 @@
+{
+  "name": "SocialMuse",
+  "app_id": "6a7e320b",
+  "gulpStartupTasks": [
+    "sass",
+    "watch"
+  ],
+  "watchPatterns": [
+    "www/**/*",
+    "!www/lib/**/*"
+  ]
+}

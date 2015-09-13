@@ -1,0 +1,20 @@
+<ion-view view-title="Playlists">
+  <ion-content>
+   <ion-list>
+     <ion-item class="item item-thumbnail-left" ng-repeat="song in songs" ng-show="song.name == nowPlaying.name ? false : true">
+         <img src="{{song.album.images[2].url}}">
+         <h2>{{song.name}}</h2>
+         <!--<p>{{song.artists[0].name}}</p>-->
+         <ion-option-button class='button' ng-click="upvote(song.$id)" ng-style="{'background-color' : voteStatus[song.name].upvoteColor}">
+             <i class="icon ion-arrow-up-a"></i>
+         </ion-option-button>
+       <ion-option-button>
+           {{0 - song.score}}
+       </ion-option-button>
+       <ion-option-button class="button"  ng-click="downvote(song.$id)" ng-style="{'background-color' : voteStatus[song.name].downvoteColor}">
+           <i class="icon ion-arrow-down-a"></i>
+       </ion-option-button>
+    </ion-item>
+   </ion-list>
+  </ion-content>
+</ion-view>
