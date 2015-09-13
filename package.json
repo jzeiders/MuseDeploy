@@ -30,7 +30,7 @@
     "com.ionic.keyboard"
   ],
   "cordovaPlatforms": []
-}
+},
 
   "main": "server.js",
   "scripts": {
