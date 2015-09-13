@@ -16,6 +16,12 @@ angular.module('socialMuse.controllers', [])
                 }
                 else {
                     console.log("Successful Login")
+                    ref.onAuth(function(authData){
+                        console.log("Got logon");
+                        userData.getData(authData.uid);
+                        console.log(userData.data);
+                        console.log(authData.uid);
+                    });
                 }
             })
         };
@@ -84,12 +90,7 @@ angular.module('socialMuse.controllers', [])
         )
 
         };
-        ref.onAuth(function(authData){
-            console.log("Got logon");
-            userData.getData(authData.uid);
-            console.log(userData.data);
-            console.log(authData.uid);
-        });
+
         loginUser('test@gmail.com', 'test');  //Enable for Testing
         $scope.nowPlaying = '';
         $scope.nowPlaying = $firebaseObject(ref.child('nowPlaying'));

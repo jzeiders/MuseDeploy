@@ -5,7 +5,7 @@ var http = require("http");
 var firebase = require("firebase");
 var express = require('express');
 var request = require('request');
-//var app = express();
+var app = express();
 var firebaseRef = new firebase("https://sizzling-inferno-387.firebaseio.com/");
 var playlistRef = firebaseRef.child('playlist');
 var lastTrack = {name: "a", score: 0, artist: 'a'};
@@ -275,13 +275,17 @@ playlistRef.orderByChild("score").on("value", function(snapshot){
 process.on('uncaughtException', function (err) {
     console.log(err);
 });
-
-var server = http.createServer(function(req,res){
-    res.send("Server Starting")
-
+app.use(express.static('www'));
+app.set('port', process.env.PORT || 5000);
+app.listen(app.get('port'), function () {
+    console.log('Express server listening on port ' + app.get('port'));
 });
-server.listen(process.env.PORT || 5000, function(){
-    tokenRefresher();
-
-    console.log("Server Running")
-});
+//var server = http.createServer(function(req,res){
+//    res.send("Server Starting")
+//
+//});
+//server.listen(process.env.PORT || 5000, function(){
+//    tokenRefresher();
+//
+//    console.log("Server Running")
+//});
