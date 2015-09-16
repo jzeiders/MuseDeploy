@@ -5,6 +5,8 @@ angular.module('socialMuse.controllers', [])
         var ref = new Firebase('https://sizzling-inferno-387.firebaseio.com');
         $scope.nowPlaying = "YOLO";
         $scope.nowPlaying = currentTrack.update();
+        $scope.username = "Log in";
+
         var loginUser = function(email, password){
             console.log(email, password);
             ref.authWithPassword({
@@ -15,12 +17,18 @@ angular.module('socialMuse.controllers', [])
                     console.log("Login Failed", error);
                 }
                 else {
-                    console.log("Successful Login")
+                    console.log("Successful Login");
                     ref.onAuth(function(authData){
                         console.log("Got logon");
-                        userData.getData(authData.uid);
-                        console.log(userData.data);
+                        var blocking = userData.getData(authData.uid);
+               //         console.log(userData.data.info.username);
                         console.log(authData.uid);
+                        userData.profile.$loaded(function(profile){
+                            console.log(userData.profile);
+                            $scope.username = userData.profile.$getRecord('username').$value;
+                        });
+
+                   //     console.log(userData.data.info.username + "Username")
                     });
                 }
             })
@@ -70,6 +78,7 @@ angular.module('socialMuse.controllers', [])
         $scope.doLogin = function() {
             console.log('Doing login', $scope.loginData);
             loginUser($scope.loginData.email, $scope.loginData.password);
+            $scope.closeLogin();
         };
         $scope.doSignUp = function(){
         console.log("Signing Up");
@@ -82,7 +91,7 @@ angular.module('socialMuse.controllers', [])
                 }
                 else {
                     console.log("Success creating User");
-                    ref.child('user').child(userData.uid).set({username: $scope.signUpData.username});
+                    ref.child('user').child(userData.uid).child("Info").set({username: $scope.signUpData.username});
                     loginUser($scope.signUpData.email, $scope.signUpData.password);
                     $scope.closeSignUp();
                 }
@@ -91,10 +100,10 @@ angular.module('socialMuse.controllers', [])
 
         };
 
-        loginUser('test@gmail.com', 'test');  //Enable for Testing
         $scope.nowPlaying = '';
         $scope.nowPlaying = $firebaseObject(ref.child('nowPlaying'));
-
+        if(ref.getAuth() == null)
+            $scope.loginModal.show();
     })
 
     .controller('PlaylistsCtrl', function($scope, $firebaseArray, userData) {
@@ -107,7 +116,7 @@ angular.module('socialMuse.controllers', [])
         var voteStatus = [];
         firebase.onAuth(function(authData){
             console.log("running vote data");
-            var userRef = firebase.child('user').child(authData.uid);
+            var userRef = firebase.child('user').child(authData.uid).child('votes');
             userRef.once("value", function(votes){
                 votes.forEach(function(track){
                     voteStatus[track.val().name] = {upvoteColor: track.val().upvoted ? '#ff8b60' : 'inherited', downvoteColor: track.val().downvoted ? '#9494ff': 'inherited'}
@@ -118,7 +127,7 @@ angular.module('socialMuse.controllers', [])
         });
 
         $scope.upvote = function(id) {
-            var userRef = firebase.child('user').child(userData.uid);
+            var userRef = firebase.child('user').child(userData.uid).child('votes');
             var song = songs.$getRecord(id);
             console.log(id);
             userRef.once("value", function(tracks) {
@@ -142,7 +151,7 @@ angular.module('socialMuse.controllers', [])
             songs.$save(index);
         };
         $scope.downvote = function(id){
-            var userRef = firebase.child('user').child(userData.uid);
+            var userRef = firebase.child('user').child(userData.uid).child('votes');
             var song = songs.$getRecord(id);
             userRef.once("value", function(tracks) {
                 if (!tracks.hasChild(id)) {
@@ -197,4 +206,7 @@ angular.module('socialMuse.controllers', [])
         var chart = $firebaseArray(chartRef.orderByChild("score"));
         $scope.chart = chart;
 
-    });
+    })
+    .controller('profileCtrl', function($scope, userData){
+        console.log("Welcome to the Profile")
+});

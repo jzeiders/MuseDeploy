@@ -5,13 +5,20 @@ angular.module('socialMuse.services', [])
     .factory("search", function($resource){
         return $resource("https://api.spotify.com/v1/search?q=:term&type=:type&limit=:limit",{term: '@term', type:'@type', limit: '@limit'},{});
     })
-    .factory("userData", function($firebaseArray) {
+    .factory("userData", function($firebaseArray, $firebaseObject) {
         var ref = new Firebase('https://sizzling-inferno-387.firebaseio.com');
         var user = {};
+        user.data = {};
         user.getData = function (uid) {
             user.uid = uid;
-            user.data = $firebaseArray(ref.child("user").child(uid))
-            };
+            user.data.votes = $firebaseArray(ref.child("user").child(uid).child("votes"));
+            user.profile = $firebaseArray(ref.child("user").child(uid).child("info"));
+            user.profile.$loaded(function(profile){
+                console.log(profile.$getRecord('username').$value + "Service User Data");
+                user.profile.username = {username: profile.$getRecord('username').$value}
+            });
+
+        };
         user.hasTrack = function(id){
             var ref = new Firebase('https://sizzling-inferno-387.firebaseio.com');
             ref.child("user").child(user.uid).once("value", function(tracks){
