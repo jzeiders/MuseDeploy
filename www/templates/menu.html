@@ -10,7 +10,7 @@
 
       </ion-nav-buttons>
       <ion-nav-buttons side="right">
-        <button class="button button-clear button-right" ng-click="username == 'Log In' ? $location.url('app.profile') : login()"> {{username}} </button>
+        <button class="button button-clear button-right" ng-click="loginButton(username)"> {{username | Username}}  </button>
   </ion-nav-buttons>
     </ion-nav-bar>
     <ion-nav-view name="menuContent"></ion-nav-view>

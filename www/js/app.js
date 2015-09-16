@@ -4,7 +4,7 @@
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
 // 'starter.controllers' is found in controllers.js
-angular.module('socialMuse', ['ionic', 'ngResource','socialMuse.controllers', 'socialMuse.services', 'firebase'])
+angular.module('socialMuse', ['ionic', 'ngResource','socialMuse.controllers', 'socialMuse.services', 'socialMuse.filters','firebase'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -62,9 +62,11 @@ angular.module('socialMuse', ['ionic', 'ngResource','socialMuse.controllers', 's
     })
       .state('app.profile', {
         url: '/profile',
-        'menuContent': {
-          templateUrl: 'templates/Profile.html',
-          controller: 'profileCtrl'
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/Profile.html',
+            controller: 'profileCtrl'
+          }
         }
       });
 

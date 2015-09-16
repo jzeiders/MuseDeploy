@@ -1,12 +1,21 @@
 
 angular.module('socialMuse.controllers', [])
 
-    .controller('AppCtrl', function($scope, $ionicModal, $timeout, $firebaseObject, userData, currentTrack) {
+    .controller('AppCtrl', function($scope, $ionicModal, $timeout, $firebaseObject, userData, currentTrack, $location) {
         var ref = new Firebase('https://sizzling-inferno-387.firebaseio.com');
         $scope.nowPlaying = "YOLO";
         $scope.nowPlaying = currentTrack.update();
         $scope.username = "Log in";
-
+        $scope.loginButton = function(username) {
+            if (username == "Log in") {
+                $scope.loginModal.show();
+                console.log("Oppening Login");
+            }
+            else {
+                $location.path('/app/profile');
+                console.log("fuckers")
+            }
+        };
         var loginUser = function(email, password){
             console.log(email, password);
             ref.authWithPassword({
@@ -14,6 +23,8 @@ angular.module('socialMuse.controllers', [])
                 password: password
             }, function(error, authData){
                 if(error) {
+                    $scope.error = true;
+                    $scope.errorMessage = error;
                     console.log("Login Failed", error);
                 }
                 else {
@@ -26,6 +37,8 @@ angular.module('socialMuse.controllers', [])
                         userData.profile.$loaded(function(profile){
                             console.log(userData.profile);
                             $scope.username = userData.profile.$getRecord('username').$value;
+                            $scope.closeLogin();
+
                         });
 
                    //     console.log(userData.data.info.username + "Username")
@@ -78,7 +91,6 @@ angular.module('socialMuse.controllers', [])
         $scope.doLogin = function() {
             console.log('Doing login', $scope.loginData);
             loginUser($scope.loginData.email, $scope.loginData.password);
-            $scope.closeLogin();
         };
         $scope.doSignUp = function(){
         console.log("Signing Up");
@@ -99,11 +111,12 @@ angular.module('socialMuse.controllers', [])
         )
 
         };
-
         $scope.nowPlaying = '';
         $scope.nowPlaying = $firebaseObject(ref.child('nowPlaying'));
-        if(ref.getAuth() == null)
-            $scope.loginModal.show();
+        //if(ref.getAuth() == null)
+        //    $scope.loginModal.show();
+
+    //loginUser('test@gmail.com', 'test');
     })
 
     .controller('PlaylistsCtrl', function($scope, $firebaseArray, userData) {
