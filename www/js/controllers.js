@@ -117,7 +117,7 @@ angular.module('socialMuse.controllers', [])
         //if(ref.getAuth() == null)
         //    $scope.loginModal.show();
 
-    loginUser('test@gmail.com', 'test');
+    //loginUser('test@gmail.com', 'test');
     })
 
     .controller('PlaylistsCtrl', function($scope, $firebaseArray, userData) {
