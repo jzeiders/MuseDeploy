@@ -27,6 +27,10 @@ angular.module('socialMuse.services', [])
             })
 
         };
+        user.clear = function(){
+            user.data = {};
+            user.profile = {};
+        };
         return user;
 
 })

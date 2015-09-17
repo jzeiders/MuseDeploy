@@ -9,13 +9,14 @@ angular.module('socialMuse.filters', [])
         words = input.split(' ');
         console.log(words);
         for(var i in words){
-            var word = words[i]
+            var word = words[i];
           //  console.log(word.charAt(0));
             var first = word.charAt(0);
             word = word.replace(first, first.toUpperCase());
                result =  result.concat(word).concat(' ');
             console.log(result);
         }
-        console.log(result + " Result ")
+        result = result.slice(0,result.length-1);
+        console.log(result + " Result ");
         return result;
     }});

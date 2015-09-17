@@ -31,15 +31,16 @@ angular.module('socialMuse.controllers', [])
                     console.log("Successful Login");
                     ref.onAuth(function(authData){
                         console.log("Got logon");
-                        var blocking = userData.getData(authData.uid);
-               //         console.log(userData.data.info.username);
-                        console.log(authData.uid);
-                        userData.profile.$loaded(function(profile){
-                            console.log(userData.profile);
-                            $scope.username = userData.profile.$getRecord('username').$value;
-                            $scope.closeLogin();
-
-                        });
+                        if(authData != null) {
+                            var blocking = userData.getData(authData.uid);
+                            //         console.log(userData.data.info.username);
+                            console.log(authData.uid);
+                            userData.profile.$loaded(function (profile) {
+                                console.log(userData.profile);
+                                $scope.username = userData.profile.$getRecord('username').$value;
+                                $scope.closeLogin();
+                            });
+                        }
 
                    //     console.log(userData.data.info.username + "Username")
                     });
@@ -103,7 +104,7 @@ angular.module('socialMuse.controllers', [])
                 }
                 else {
                     console.log("Success creating User");
-                    ref.child('user').child(userData.uid).child("Info").set({username: $scope.signUpData.username});
+                    ref.child('user').child(userData.uid).child("info").set({username: $scope.signUpData.username});
                     loginUser($scope.signUpData.email, $scope.signUpData.password);
                     $scope.closeSignUp();
                 }
@@ -116,7 +117,7 @@ angular.module('socialMuse.controllers', [])
         //if(ref.getAuth() == null)
         //    $scope.loginModal.show();
 
-    //loginUser('test@gmail.com', 'test');
+    loginUser('test@gmail.com', 'test');
     })
 
     .controller('PlaylistsCtrl', function($scope, $firebaseArray, userData) {
@@ -129,14 +130,18 @@ angular.module('socialMuse.controllers', [])
         var voteStatus = [];
         firebase.onAuth(function(authData){
             console.log("running vote data");
-            var userRef = firebase.child('user').child(authData.uid).child('votes');
-            userRef.once("value", function(votes){
-                votes.forEach(function(track){
-                    voteStatus[track.val().name] = {upvoteColor: track.val().upvoted ? '#ff8b60' : 'inherited', downvoteColor: track.val().downvoted ? '#9494ff': 'inherited'}
-                });
-            $scope.voteStatus = voteStatus;
-            })
-
+           if(authData != null) {
+               var userRef = firebase.child('user').child(authData.uid).child('votes');
+               userRef.once("value", function (votes) {
+                   votes.forEach(function (track) {
+                       voteStatus[track.val().name] = {
+                           upvoteColor: track.val().upvoted ? '#ff8b60' : 'inherited',
+                           downvoteColor: track.val().downvoted ? '#9494ff' : 'inherited'
+                       }
+                   });
+                   $scope.voteStatus = voteStatus;
+               })
+           }
         });
 
         $scope.upvote = function(id) {
@@ -221,5 +226,12 @@ angular.module('socialMuse.controllers', [])
 
     })
     .controller('profileCtrl', function($scope, userData){
+        var ref = new Firebase('sizzling-inferno-387.firebaseio.com');
+
+        var logOut = function(){
+            ref.unauth();
+            userData.clear();
+        }
         console.log("Welcome to the Profile")
+        $scope.logOut = logOut;
 });
