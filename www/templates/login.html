@@ -10,7 +10,7 @@
   <ion-content>
     <form ng-submit="doLogin()">
       <div class="list">
-        <label class="item item-assertive" ng-show="error">
+        <label class="item item-assertive" ng-hide="!(error)">
           <h2 class="title"> Error: {{errorMessage}}</h2>
         </label>
         <label class="item item-input">

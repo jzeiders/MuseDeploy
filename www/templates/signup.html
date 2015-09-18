@@ -8,6 +8,9 @@
     <ion-content>
         <form ng-submit="doSignUp()">
             <div class="list">
+                <label class="item item-assertive" ng-hide="!(error)">
+                    <h2 class="title"> Error: {{errorMessage}}</h2>
+                </label>
                 <label class="item item-input">
                     <span class="input-label">Username</span>
                     <input type="text" ng-model="signUpData.username">
@@ -22,7 +25,7 @@
                 </label>
                 <label class="item item-input">
                     <span class="input-label">Repeat Password</span>
-                    <input type="password" ng-model="signUpData.backUpPassword">
+                    <input type="password" ng-model="signUpData.repeatPassword">
                 </label>
                 <label class="item">
                     <button class="button button-block button-positive" type="submit">Sign up</button>

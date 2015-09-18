@@ -1,7 +1,7 @@
 
 angular.module('socialMuse.controllers', [])
 
-    .controller('AppCtrl', function($scope, $ionicModal, $timeout, $firebaseObject, userData, currentTrack, $location) {
+    .controller('AppCtrl', function($scope, $ionicModal, $timeout, $firebaseObject, userData, currentTrack, $location, $rootScope) {
         var ref = new Firebase('https://sizzling-inferno-387.firebaseio.com');
         $scope.nowPlaying = "YOLO";
         $scope.nowPlaying = currentTrack.update();
@@ -95,28 +95,37 @@ angular.module('socialMuse.controllers', [])
         };
         $scope.doSignUp = function(){
         console.log("Signing Up");
-            ref.createUser({
-            email:  $scope.signUpData.email,
-            password: $scope.signUpData.password
-        }, function (error, userData) {
-                if(error){
-                    console.log("User Creation Error :", error );
-                }
-                else {
-                    console.log("Success creating User");
-                    ref.child('user').child(userData.uid).child("info").set({username: $scope.signUpData.username});
-                    loginUser($scope.signUpData.email, $scope.signUpData.password);
-                    $scope.closeSignUp();
-                }
+            if($scope.signUpData.password != $scope.signUpData.repeatPassword){
+                $scope.error = true;
+                $scope.errorMessage = "Passwords Don't Match"
             }
-        )
-
+            else {
+                ref.createUser({
+                        email: $scope.signUpData.email,
+                        password: $scope.signUpData.password
+                    }, function (error, userData) {
+                        if (error) {
+                            console.log("User Creation Error :", error);
+                            $scope.error = true;
+                            $scope.errorMessage = error;
+                        }
+                        else {
+                            console.log("Success creating User");
+                            ref.child('user').child(userData.uid).child("info").set({username: $scope.signUpData.username});
+                            loginUser($scope.signUpData.email, $scope.signUpData.password);
+                            $scope.closeSignUp();
+                        }
+                    }
+                )
+            }
         };
         $scope.nowPlaying = '';
         $scope.nowPlaying = $firebaseObject(ref.child('nowPlaying'));
         //if(ref.getAuth() == null)
         //    $scope.loginModal.show();
-
+        $rootScope.$on("Log Out", function(){
+            $scope.username = 'Log in';
+        });
     //loginUser('test@gmail.com', 'test');
     })
 
@@ -225,13 +234,15 @@ angular.module('socialMuse.controllers', [])
         $scope.chart = chart;
 
     })
-    .controller('profileCtrl', function($scope, userData){
+    .controller('profileCtrl', function($scope, userData, $rootScope){
         var ref = new Firebase('sizzling-inferno-387.firebaseio.com');
 
         var logOut = function(){
             ref.unauth();
             userData.clear();
-        }
+            $rootScope.$emit("Log Out");
+            console.log("Logged Out");
+        };
         console.log("Welcome to the Profile")
         $scope.logOut = logOut;
 });
