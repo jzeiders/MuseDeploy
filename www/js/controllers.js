@@ -1,7 +1,7 @@
 
 angular.module('socialMuse.controllers', [])
 
-    .controller('AppCtrl', function($scope, $ionicModal, $timeout, $firebaseObject, userData, currentTrack, $location, $rootScope) {
+    .controller('AppCtrl', function($scope, $ionicModal, $timeout, $firebaseObject, userData, currentTrack, $location, $rootScope, $cookies) {
         var ref = new Firebase('https://sizzling-inferno-387.firebaseio.com');
         $scope.nowPlaying = "YOLO";
         $scope.nowPlaying = currentTrack.update();
@@ -9,7 +9,7 @@ angular.module('socialMuse.controllers', [])
         $scope.loginButton = function(username) {
             if (username == "Log in") {
                 $scope.loginModal.show();
-                console.log("Oppening Login");
+                console.log("Opening Login");
             }
             else {
                 $location.path('/app/profile');
@@ -29,6 +29,7 @@ angular.module('socialMuse.controllers', [])
                 }
                 else {
                     console.log("Successful Login");
+                    $cookies.putObject("loginData", {email: email, password:password});// {email: email, password: password});
                     ref.onAuth(function(authData){
                         console.log("Got logon");
                         if(authData != null) {
@@ -41,7 +42,7 @@ angular.module('socialMuse.controllers', [])
                                 $scope.closeLogin();
                             });
                         }
-
+                    console.log("Cookie: " + $cookies.getObject("logta"));
                    //     console.log(userData.data.info.username + "Username")
                     });
                 }
@@ -53,7 +54,8 @@ angular.module('socialMuse.controllers', [])
         // listen for the $ionicView.enter event:
         //$scope.$on('$ionicView.enter', function(e) {
         //});
-
+        if($cookies.getObject("loginData") != null)
+            loginUser($cookies.getObject("loginData").email,$cookies.getObject("loginData").password);
         // Form data for the login modal
         $scope.loginData = {};
         $scope.signUpData = {};
@@ -182,7 +184,7 @@ angular.module('socialMuse.controllers', [])
             var song = songs.$getRecord(id);
             userRef.once("value", function(tracks) {
                 if (!tracks.hasChild(id)) {
-                    userRef.child(id).set({name: track.name, upvoted: false, downvoted: false});
+                    userRef.child(id).set({name: song.name, upvoted: false, downvoted: false});
                 }
             });
             userRef.child(id).once("value", function(votes){

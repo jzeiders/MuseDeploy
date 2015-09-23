@@ -60,6 +60,7 @@
     "commit": "01bc2203a6c71953dd35db19f9b64cf6bbeb6bf6"
   },
   "_source": "git://github.com/driftyco/ionic.git",
-  "_target": "1.1.0",
-  "_originalSource": "ionic"
+  "_target": "~1.1.0",
+  "_originalSource": "ionic",
+  "_direct": true
 }

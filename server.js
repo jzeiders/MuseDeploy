@@ -106,6 +106,7 @@ var updateCurrentTrack = function(){
                     if (track.toLowerCase() == currentTrack.name.toLowerCase()) {
                         console.log("remove track attempt")
                         removeTrack(song);
+                        updateUsers(song);
                     }
 
                 });
@@ -116,6 +117,32 @@ var updateCurrentTrack = function(){
         })
     })
 };
+var updateTrackHistory = function(user, song){
+    if(user.child('history').hasChild(song)){
+        user.child('history').child(song).once('value', function(track){
+            var score = track.val().score;
+            user.child('history').child(song).update({score: score + song.val().score})
+
+        })
+    }
+    else {
+        user.child('history').child(song).update({score: song.val().score})
+    }
+};
+
+var updateUsers = function(song){
+    firebaseRef.child('user').once("value", function(users){
+        users.forEach(function(user){
+            user.child('votes').forEach(function(track){
+                if(track.val() == song.key()) {
+                    updateTrackHistory(user ,song.val().name);
+                    user.child('votes').child(song.key()).remove();
+                }
+            })
+        })
+    })
+};
+
 var deleteNegTrack = function(){
     playlistRef.once("value", function(snapshot){
         snapshot.forEach(function(song){
